@@ -20,7 +20,7 @@ const AdminInboxPage = () => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://127.0.0.1:8080/api/admin/messages', {
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/messages', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessages(response.data);

@@ -15,7 +15,7 @@ const AdminLogsPage = () => {
     const fetchLogs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://127.0.0.1:8080/api/admin/logs', {
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/logs', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLogs(response.data);

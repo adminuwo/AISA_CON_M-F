@@ -25,10 +25,10 @@ const LegalSettings = () => {
       try {
         const token = localStorage.getItem('token');
         const [privacyRes, termsRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8080/api/admin/settings/global?key=privacy_policy', {
+          axios.get('http://127.0.0.1:8000/api/admin/settings/global?key=privacy_policy', {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get('http://127.0.0.1:8080/api/admin/settings/global?key=terms_of_service', {
+          axios.get('http://127.0.0.1:8000/api/admin/settings/global?key=terms_of_service', {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -60,7 +60,7 @@ const LegalSettings = () => {
         formData.append('delete_file', 'true');
       }
 
-      const res = await axios.post('http://127.0.0.1:8080/api/admin/settings/global', 
+      const res = await axios.post('http://127.0.0.1:8000/api/admin/settings/global', 
         formData,
         { headers: { 
             Authorization: `Bearer ${token}`,
@@ -201,7 +201,7 @@ const LegalSettings = () => {
                         <div className="flex flex-col">
                           <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1 italic">File Attached:</p>
                           <a 
-                            href={privacyFile ? URL.createObjectURL(privacyFile) : `http://127.0.0.1:8080${currentPrivacyFile}`} 
+                            href={privacyFile ? URL.createObjectURL(privacyFile) : `http://127.0.0.1:8000${currentPrivacyFile}`} 
                             target="_blank" 
                             className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
                           >
@@ -281,7 +281,7 @@ const LegalSettings = () => {
                         <div className="flex flex-col">
                           <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1 italic">File Attached:</p>
                           <a 
-                            href={termsFile ? URL.createObjectURL(termsFile) : `http://127.0.0.1:8080${currentTermsFile}`} 
+                            href={termsFile ? URL.createObjectURL(termsFile) : `http://127.0.0.1:8000${currentTermsFile}`} 
                             target="_blank" 
                             className="text-[10px] font-bold text-purple-600 hover:underline flex items-center gap-1"
                           >
