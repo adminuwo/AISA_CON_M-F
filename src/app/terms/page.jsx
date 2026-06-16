@@ -13,7 +13,7 @@ export default function TermsPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/settings/global?key=terms_of_service');
+        const res = await axios.get('http://127.0.0.1:8080/api/admin/settings/global?key=terms_of_service');
         setContent(res.data.value || '');
         setFileUrl(res.data.file || '');
       } catch (err) {

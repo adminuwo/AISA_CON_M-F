@@ -64,8 +64,8 @@ const LoginPage = () => {
     const fetchLegal = async () => {
       try {
         const [privRes, termsRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/api/admin/settings/global?key=privacy_policy'),
-          axios.get('http://127.0.0.1:8000/api/admin/settings/global?key=terms_of_service')
+          axios.get('http://127.0.0.1:8080/api/admin/settings/global?key=privacy_policy'),
+          axios.get('http://127.0.0.1:8080/api/admin/settings/global?key=terms_of_service')
         ]);
         setLegalData({
           privacy: privRes.data,
@@ -83,7 +83,7 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/auth/login', { email, password, role });
+      const response = await axios.post('http://127.0.0.1:8080/api/auth/login', { email, password, role });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       if (role === 'ADMIN') {

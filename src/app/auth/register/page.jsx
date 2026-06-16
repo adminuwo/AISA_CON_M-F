@@ -23,7 +23,7 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
     try {
-      await axios.post('http://127.0.0.1:8000/api/auth/register', formData);
+      await axios.post('http://127.0.0.1:8080/api/auth/register', formData);
       setSuccess(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');

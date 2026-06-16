@@ -76,28 +76,81 @@ const PlainNode = ({ id, data = {} }) => (
   </NodeContainer>
 );
 
-const ButtonsNode = ({ id, data = {} }) => (
-  <NodeContainer id={id} title="Buttons" icon={MousePointer2} color="bg-indigo-600">
-    <p className="text-[11px] font-semibold text-slate-700 mb-4 line-clamp-2">"{data.message || 'Options...'}"</p>
-    <div className="space-y-2">
-      {(data.buttons || ['Option 1']).map((btn, i) => (
-        <div key={i} className="relative">
-          <div className="px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-[9px] font-bold text-indigo-600 uppercase tracking-widest text-center">{btn}</div>
-          <Handle type="source" position={Position.Right} id={`btn-${i}`} className="w-2 h-2 bg-indigo-500 border-2 border-white -right-1" />
-        </div>
-      ))}
-    </div>
-    <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-slate-400 border-2 border-white -top-1" />
-  </NodeContainer>
-);
+const ButtonsNode = ({ id, data = {} }) => {
+  const { setNodes } = useReactFlow();
+
+  const handleAddButton = (e) => {
+    e.stopPropagation();
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.id === id) {
+          const currentButtons = n.data.buttons || ['Option 1'];
+          if (currentButtons.length < 3) {
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                buttons: [...currentButtons, `Option ${currentButtons.length + 1}`],
+              },
+            };
+          }
+        }
+        return n;
+      })
+    );
+  };
+
+  const buttons = data.buttons || ['Option 1'];
+
+  return (
+    <NodeContainer id={id} title="Buttons" icon={MousePointer2} color="bg-indigo-600">
+      <p className="text-[11px] font-semibold text-slate-700 mb-4 line-clamp-2">"{data.message || 'Options...'}"</p>
+      <div className="space-y-2">
+        {buttons.map((btn, i) => (
+          <div key={i} className="relative">
+            <div className="px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-[9px] font-bold text-indigo-600 uppercase tracking-widest text-center">{btn}</div>
+            <Handle type="source" position={Position.Right} id={`btn-${i}`} className="w-2 h-2 bg-indigo-500 border-2 border-white -right-1" />
+          </div>
+        ))}
+        {buttons.length < 3 && (
+          <button
+            onClick={handleAddButton}
+            className="w-full mt-2 py-1.5 border border-dashed border-indigo-200 rounded-lg text-[9px] font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50 transition-colors flex items-center justify-center gap-1"
+          >
+            <Plus size={10} strokeWidth={3} /> Add Button
+          </button>
+        )}
+      </div>
+      <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-slate-400 border-2 border-white -top-1" />
+    </NodeContainer>
+  );
+};
 
 const ImageNode = ({ id, data = {} }) => (
   <NodeContainer id={id} title="Image" icon={ImageIcon} color="bg-purple-600">
-    <div className="aspect-video bg-slate-100 rounded-lg flex items-center justify-center mb-2 border border-dashed border-slate-200">
-      <ImageIcon size={20} className="text-slate-300" />
+    <div className="aspect-video bg-slate-100 rounded-lg flex items-center justify-center mb-2 border border-dashed border-slate-200 overflow-hidden relative">
+      {data.mediaUrl ? (
+        <img src={data.mediaUrl} alt="Upload preview" className="w-full h-full object-cover" />
+      ) : (
+        <ImageIcon size={20} className="text-slate-300" />
+      )}
     </div>
     <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-slate-400 border-2 border-white -top-1" />
     <Handle type="source" position={Position.Bottom} className="w-2.5 h-2.5 bg-purple-600 border-2 border-white -bottom-1" />
+  </NodeContainer>
+);
+
+const VideoNode = ({ id, data = {} }) => (
+  <NodeContainer id={id} title="Video" icon={Video} color="bg-rose-600">
+    <div className="aspect-video bg-slate-100 rounded-lg flex items-center justify-center mb-2 border border-dashed border-slate-200 overflow-hidden relative">
+      {data.mediaUrl ? (
+        <video src={data.mediaUrl} className="w-full h-full object-cover" controls />
+      ) : (
+        <Video size={20} className="text-slate-300" />
+      )}
+    </div>
+    <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-slate-400 border-2 border-white -top-1" />
+    <Handle type="source" position={Position.Bottom} className="w-2.5 h-2.5 bg-rose-600 border-2 border-white -bottom-1" />
   </NodeContainer>
 );
 
@@ -138,6 +191,7 @@ const WorkflowBuilderInner = () => {
     default: PlainNode,
     buttons: ButtonsNode,
     image: ImageNode,
+    video: VideoNode,
     condition: BranchNode,
   }), []);
 
@@ -145,7 +199,7 @@ const WorkflowBuilderInner = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://127.0.0.1:8000/api/workflows/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`http://127.0.0.1:8080/api/workflows/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
       setWorkflow(res.data);
       let steps = res.data.steps;
       if (typeof steps === 'string') try { steps = JSON.parse(steps); } catch(e) { steps = {}; }
@@ -171,7 +225,7 @@ const WorkflowBuilderInner = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:8000/api/workflows/${id}/`, { steps: { nodes, edges } }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`http://127.0.0.1:8080/api/workflows/${id}/`, { steps: { nodes, edges } }, { headers: { Authorization: `Bearer ${token}` } });
     } catch (err) { alert('Save failed'); } finally { setIsSaving(false); }
   };
 
@@ -222,6 +276,7 @@ const WorkflowBuilderInner = () => {
                 <SidebarItem icon={MessageSquare} label="Plain Message" onDragStart={(e) => onDragStart(e, 'plain')} />
                 <SidebarItem icon={MousePointer2} label="Message + Buttons" onDragStart={(e) => onDragStart(e, 'buttons')} />
                 <SidebarItem icon={ImageIcon} label="Message + Image" onDragStart={(e) => onDragStart(e, 'image')} />
+                <SidebarItem icon={Video} label="Message + Video" onDragStart={(e) => onDragStart(e, 'video')} />
              </SidebarCategory>
              <div className="px-4 py-2 mt-4"><SidebarItem icon={Zap} label="Set a Condition" onDragStart={(e) => onDragStart(e, 'condition')} color="amber" /></div>
           </div>
@@ -244,7 +299,7 @@ const WorkflowBuilderInner = () => {
                 <button onClick={() => setSelectedNode(null)}><X size={20} /></button>
               </div>
               <div className="p-8">
-                <MessageForm data={selectedNode.data} onSave={(d) => updateNodeData(selectedNode.id, d)} />
+                <MessageForm data={selectedNode.data} type={selectedNode.type} onSave={(d) => updateNodeData(selectedNode.id, d)} />
               </div>
             </motion.div>
           )}
@@ -255,12 +310,90 @@ const WorkflowBuilderInner = () => {
 };
 
 // --- FORM COMPONENT ---
-const MessageForm = ({ data, onSave }) => {
+const MessageForm = ({ data, type, onSave }) => {
   const [msg, setMsg] = useState(data.message || '');
+  const [buttons, setButtons] = useState(data.buttons || ['Option 1']);
+  const [mediaUrl, setMediaUrl] = useState(data.mediaUrl || null);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setMediaUrl(url);
+    }
+  };
+
+  const handleAddButton = () => {
+    if (buttons.length < 3) {
+      setButtons([...buttons, `Option ${buttons.length + 1}`]);
+    }
+  };
+
+  const handleButtonChange = (index, value) => {
+    const newButtons = [...buttons];
+    newButtons[index] = value;
+    setButtons(newButtons);
+  };
+
+  const handleRemoveButton = (index) => {
+    const newButtons = buttons.filter((_, i) => i !== index);
+    setButtons(newButtons);
+  };
+
   return (<div className="space-y-6">
     <div><label className="text-[10px] font-black uppercase text-slate-400 mb-2 block">Message Content</label>
     <textarea value={msg} onChange={e => setMsg(e.target.value)} className="w-full bg-slate-50 border p-4 rounded-xl text-sm font-bold focus:border-blue-600 outline-none" rows={4} /></div>
-    <button onClick={() => onSave({ message: msg })} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] hover:bg-blue-600 transition-all">Save Changes</button>
+    
+    {type === 'buttons' && (
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <label className="text-[10px] font-black uppercase text-slate-400 block mb-0">Buttons</label>
+          {buttons.length < 3 && (
+            <button onClick={handleAddButton} className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest flex items-center gap-1">
+              <Plus size={10} strokeWidth={3} /> Add Button
+            </button>
+          )}
+        </div>
+        <div className="space-y-3">
+          {buttons.map((btn, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input value={btn} onChange={(e) => handleButtonChange(i, e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold text-slate-700 focus:border-blue-600 outline-none" />
+              <button onClick={() => handleRemoveButton(i)} className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded-xl border border-transparent hover:border-red-100">
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+          {buttons.length === 0 && <p className="text-xs text-slate-400 font-semibold italic">No buttons added.</p>}
+        </div>
+      </div>
+    )}
+
+    {(type === 'image' || type === 'video') && (
+      <div>
+        <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block">Upload Media</label>
+        <div className="relative border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors">
+          <input 
+            type="file" 
+            accept={type === 'image' ? 'image/*' : 'video/*'} 
+            onChange={handleFileUpload} 
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+          />
+          {mediaUrl ? (
+            <div className="flex flex-col items-center gap-2">
+              <CheckCircle2 size={24} className="text-emerald-500" />
+              <span className="text-xs font-bold text-slate-700">Media selected</span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Plus size={24} className="text-slate-400" />
+              <span className="text-xs font-bold text-slate-500">Click to browse or drag & drop</span>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+
+    <button onClick={() => onSave({ message: msg, buttons, mediaUrl })} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-200 transition-all">Save Changes</button>
   </div>);
 };
 

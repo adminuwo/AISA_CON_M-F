@@ -19,10 +19,10 @@ const ClientWorkflowsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:8000/api/workflows/', {
+      const res = await axios.get('http://127.0.0.1:8080/api/workflows/', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setWorkflows(autoRes.data); // Wait, I should use res.data. Let me double check endpoint.
+      setWorkflows(res.data);
     } catch (err) {
       console.error('Failed to fetch workflows');
     } finally {
@@ -35,7 +35,7 @@ const ClientWorkflowsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:8000/api/workflows/', {
+      const res = await axios.get('http://127.0.0.1:8080/api/workflows/', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWorkflows(res.data);
@@ -55,7 +55,7 @@ const ClientWorkflowsPage = () => {
     try {
       setIsCreating(true);
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:8000/api/workflows/', {
+      const res = await axios.post('http://127.0.0.1:8080/api/workflows/', {
         name: newWorkflowName,
         trigger_type: 'KEYWORD',
         steps: { nodes: [], edges: [] },
@@ -76,7 +76,7 @@ const ClientWorkflowsPage = () => {
   const handleToggle = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:8000/api/workflows/${id}/`, {
+      await axios.patch(`http://127.0.0.1:8080/api/workflows/${id}/`, {
         enabled: !currentStatus
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -91,7 +91,7 @@ const ClientWorkflowsPage = () => {
     if (!confirm('Are you sure? This will delete the entire workflow.')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8000/api/workflows/${id}/`, {
+      await axios.delete(`http://127.0.0.1:8080/api/workflows/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();

@@ -27,7 +27,7 @@ const ClientSettingsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8000/api/profile', {
+      const res = await axios.get('http://127.0.0.1:8080/api/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClient(res.data.client);
@@ -54,7 +54,7 @@ const ClientSettingsPage = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      await axios.patch('http://127.0.0.1:8000/api/profile', editData, {
+      await axios.patch('http://127.0.0.1:8080/api/profile', editData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsEditing(false);
