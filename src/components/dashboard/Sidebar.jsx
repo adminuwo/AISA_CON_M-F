@@ -14,7 +14,10 @@ import {
   ChevronRight,
   Zap as ZapIcon,
   ShieldCheck,
-  Scale
+  Scale,
+  Brain,
+  Users,
+  Megaphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -37,9 +40,13 @@ const Sidebar = ({ role }) => {
     { name: 'Channels', href: '/client/channels', icon: Link2 },
     { name: 'Auto Replies', href: '/client/automations', icon: Zap },
     { name: 'Workflows', href: '/client/workflows', icon: GitBranch },
+    { name: 'Leads (CRM)', href: '/client/crm', icon: Users },
     { name: 'Messages', href: '/client/inbox', icon: MessageSquare },
+    { name: 'Broadcasts', href: '/client/campaigns', icon: Megaphone },
+    { name: 'Knowledge Base', href: '/client/knowledge', icon: Brain },
     { name: 'Settings', href: '/client/settings', icon: Settings },
   ];
+
 
   const links = role === 'ADMIN' ? adminLinks : clientLinks;
 
