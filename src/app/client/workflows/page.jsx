@@ -7,13 +7,22 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { templateData } from './templateData';
 
 const ClientWorkflowsPage = () => {
   const [workflows, setWorkflows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalStep, setModalStep] = useState('templates'); // 'templates' | 'name'
   const [newWorkflowName, setNewWorkflowName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+
+  const workflowTemplates = [
+    "Hospital",
+    "Mall",
+    "Real Estate",
+    "School"
+  ];
 
   const fetchWorkflows = async () => {
     try {
@@ -50,15 +59,22 @@ const ClientWorkflowsPage = () => {
     fetchData();
   }, []);
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  const handleCreate = async (e, overrideName = null) => {
+    if (e) e.preventDefault();
     try {
       setIsCreating(true);
       const token = localStorage.getItem('token');
+      const finalName = overrideName || newWorkflowName || 'Untitled Workflow';
+      
+      let initialSteps = { nodes: [], edges: [] };
+      if (overrideName && templateData[overrideName] && templateData[overrideName].nodes.length > 0) {
+        initialSteps = templateData[overrideName];
+      }
+
       const res = await axios.post('http://127.0.0.1:8080/api/workflows/', {
-        name: newWorkflowName,
+        name: finalName,
         trigger_type: 'KEYWORD',
-        steps: { nodes: [], edges: [] },
+        steps: initialSteps,
         enabled: false
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -68,7 +84,6 @@ const ClientWorkflowsPage = () => {
       window.location.href = `/client/workflows/builder/${res.data.id}`;
     } catch (err) {
       alert('Failed to create workflow');
-    } finally {
       setIsCreating(false);
     }
   };
@@ -110,7 +125,7 @@ const ClientWorkflowsPage = () => {
             <p className="text-slate-500 font-medium italic">Create complex, multi-step automation sequences.</p>
           </div>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => { setIsModalOpen(true); setModalStep('templates'); }}
             className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-100 flex items-center gap-2"
           >
             <Plus size={16} />
@@ -129,7 +144,7 @@ const ClientWorkflowsPage = () => {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">No Workflows Yet</h3>
               <p className="text-sm text-slate-400 italic mb-8">Start by creating your first automated sequence.</p>
-              <button onClick={() => setIsModalOpen(true)} className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest">Build First Flow</button>
+              <button onClick={() => { setIsModalOpen(true); setModalStep('templates'); }} className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest">Build First Flow</button>
             </div>
           ) : (
             workflows.map((flow) => (
@@ -150,7 +165,7 @@ const ClientWorkflowsPage = () => {
                       <GitBranch size={24} />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-2 group-hover:text-blue-600 transition-colors">{flow.name}</h3>
-                    <p className="text-xs text-slate-400 font-medium italic">{flow.steps?.length || 0} Nodes in this flow</p>
+                    <p className="text-xs text-slate-400 font-medium italic">{flow.steps?.nodes?.length || 0} Nodes in this flow</p>
                   </div>
 
                   <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
@@ -180,26 +195,89 @@ const ClientWorkflowsPage = () => {
           {isModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
-              <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative bg-white w-full max-w-md rounded-[40px] shadow-2xl p-10">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">New Workflow</h2>
-                  <button onClick={() => setIsModalOpen(false)} className="text-slate-300 hover:text-slate-900 transition-colors"><X size={24} /></button>
-                </div>
-                <form onSubmit={handleCreate} className="space-y-6">
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block ml-1">Workflow Name</label>
-                    <input 
-                      required 
-                      value={newWorkflowName} 
-                      onChange={e => setNewWorkflowName(e.target.value)} 
-                      placeholder="e.g. Onboarding Sequence" 
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 transition-all font-semibold" 
-                    />
+              <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative bg-white w-full max-w-2xl rounded-[32px] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+                
+                {modalStep === 'templates' ? (
+                  <div className="flex flex-col h-full max-h-[90vh]">
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center">
+                           <GitBranch size={20} />
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Choose from the Workflow</h2>
+                      </div>
+                      <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors"><X size={24} /></button>
+                    </div>
+
+                    {/* Body */}
+                    <div className="overflow-y-auto p-6 space-y-6 flex-1 min-h-0">
+                       <div className="p-5 bg-emerald-50/50 text-emerald-700 rounded-2xl text-sm font-medium border border-emerald-100/50 shrink-0">
+                         Looking for a faster and more efficient way to create stunning Workflows? Look no further than our templates!
+                       </div>
+                       
+                       <div className="border border-slate-100 rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-sm">
+                         {workflowTemplates.map((template, idx) => (
+                           <div 
+                             key={idx} 
+                             onClick={() => handleCreate(null, template)} 
+                             className="p-5 hover:bg-slate-50 cursor-pointer transition-colors text-slate-700 font-medium flex items-center justify-between group"
+                           >
+                             <span>{template}</span>
+                             {isCreating ? <Loader2 size={16} className="text-blue-600 animate-spin opacity-0 group-hover:opacity-100" /> : <ArrowRight size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-6 border-t border-slate-100 flex justify-end bg-slate-50/50 shrink-0">
+                       <button 
+                         onClick={() => handleCreate(null, 'Untitled Workflow')} 
+                         disabled={isCreating}
+                         className="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-md shadow-slate-200"
+                       >
+                         {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                         Create from Scratch
+                       </button>
+                    </div>
                   </div>
-                  <button type="submit" disabled={isCreating} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-2">
-                    {isCreating ? <Loader2 size={16} className="animate-spin" /> : 'Create & Open Builder'}
-                  </button>
-                </form>
+                ) : (
+                  <div className="p-10">
+                    <div className="flex items-center justify-between mb-8">
+                      <h2 className="text-2xl font-bold text-slate-900 tracking-tight">New Workflow</h2>
+                      <button onClick={() => setIsModalOpen(false)} className="text-slate-300 hover:text-slate-900 transition-colors"><X size={24} /></button>
+                    </div>
+                    <form onSubmit={handleCreate} className="space-y-6">
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block ml-1">Workflow Name</label>
+                        <input 
+                          required 
+                          value={newWorkflowName} 
+                          onChange={e => setNewWorkflowName(e.target.value)} 
+                          placeholder="e.g. Onboarding Sequence" 
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 transition-all font-semibold" 
+                        />
+                      </div>
+                      <div className="flex gap-4">
+                        <button 
+                          type="button" 
+                          onClick={() => setModalStep('templates')} 
+                          className="w-1/3 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                        >
+                          Back
+                        </button>
+                        <button 
+                          type="submit" 
+                          disabled={isCreating} 
+                          className="w-2/3 py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2"
+                        >
+                          {isCreating ? <Loader2 size={16} className="animate-spin" /> : 'Create & Open Builder'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
               </motion.div>
             </div>
           )}
