@@ -33,12 +33,12 @@ const ClientAutomationsPage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const autoRes = await axios.get('http://127.0.0.1:8080/api/automations/', {
+      const autoRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/automations/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAutomations(autoRes.data);
 
-      const profileRes = await axios.get('http://127.0.0.1:8080/api/profile', {
+      const profileRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClient(profileRes.data.client);
@@ -68,7 +68,7 @@ const ClientAutomationsPage = () => {
       const token = localStorage.getItem('token');
       const dataToSend = newData || aiData;
       
-      const res = await axios.patch('http://127.0.0.1:8080/api/profile', {
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/profile`, {
         ai_enabled: dataToSend.enabled,
         ai_context: dataToSend.context
       }, {
@@ -91,7 +91,7 @@ const ClientAutomationsPage = () => {
       const token = localStorage.getItem('token');
       const dataToSend = newData || greetingData;
       
-      const res = await axios.patch('http://127.0.0.1:8080/api/profile', {
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/profile`, {
         greeting_enabled: dataToSend.enabled,
         greeting_message: dataToSend.message,
         greeting_buttons: dataToSend.buttons
@@ -114,7 +114,7 @@ const ClientAutomationsPage = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      await axios.post('http://127.0.0.1:8080/api/automations/', {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/automations/`, {
         ...formData,
         keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean),
         buttons: formData.buttons.filter(b => b.trim()),
@@ -136,7 +136,7 @@ const ClientAutomationsPage = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      const res = await axios.patch(`http://127.0.0.1:8080/api/automations/${selectedAuto.id}/`, {
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/automations/${selectedAuto.id}/`, {
         ...editFormData,
         keywords: typeof editFormData.keywords === 'string' ? editFormData.keywords.split(',').map(k => k.trim()).filter(Boolean) : editFormData.keywords,
         buttons: editFormData.buttons.filter(b => b.trim())
@@ -157,7 +157,7 @@ const ClientAutomationsPage = () => {
   const handleToggle = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.patch(`http://127.0.0.1:8080/api/automations/${id}/`, {
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/automations/${id}/`, {
         enabled: !currentStatus
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -175,7 +175,7 @@ const ClientAutomationsPage = () => {
     if (!confirm('Are you sure you want to delete this rule?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://127.0.0.1:8080/api/automations/${id}/`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/automations/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsDetailModalOpen(false);

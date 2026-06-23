@@ -32,7 +32,7 @@ const PlatformAssistant = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://127.0.0.1:8080/api/platform-assistant/', { query }, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/platform-assistant/`, { query }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

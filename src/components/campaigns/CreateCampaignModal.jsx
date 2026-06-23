@@ -27,7 +27,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onCreated }) {
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8080/api/templates/', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/templates/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTemplates(res.data);
@@ -46,7 +46,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onCreated }) {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://127.0.0.1:8080/api/campaigns/', {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/campaigns/`, {
         name,
         template: templateId,
         audience_filter: audienceFilter

@@ -28,7 +28,7 @@ const ClientWorkflowsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8080/api/workflows/', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/workflows/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWorkflows(res.data);
@@ -44,7 +44,7 @@ const ClientWorkflowsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8080/api/workflows/', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/workflows/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWorkflows(res.data);
@@ -71,7 +71,7 @@ const ClientWorkflowsPage = () => {
         initialSteps = templateData[overrideName];
       }
 
-      const res = await axios.post('http://127.0.0.1:8080/api/workflows/', {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/workflows/`, {
         name: finalName,
         trigger_type: 'KEYWORD',
         steps: initialSteps,
@@ -91,7 +91,7 @@ const ClientWorkflowsPage = () => {
   const handleToggle = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:8080/api/workflows/${id}/`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/workflows/${id}/`, {
         enabled: !currentStatus
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -106,7 +106,7 @@ const ClientWorkflowsPage = () => {
     if (!confirm('Are you sure? This will delete the entire workflow.')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://127.0.0.1:8080/api/workflows/${id}/`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/workflows/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();

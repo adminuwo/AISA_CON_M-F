@@ -20,7 +20,7 @@ const AdminAutomationsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:8080/api/admin/automations', {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/admin/automations`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAutomations(response.data);
@@ -36,7 +36,7 @@ const AdminAutomationsPage = () => {
       setDetailsLoading(true);
       setIsDetailsModalOpen(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://127.0.0.1:8080/api/clients/${id}/`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/clients/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSelectedClientDetails(response.data);
@@ -52,7 +52,7 @@ const AdminAutomationsPage = () => {
   const handleUpdateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:8080/api/clients/${id}/`, { status }, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/clients/${id}/`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchAutomations();

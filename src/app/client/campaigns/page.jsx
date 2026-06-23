@@ -19,7 +19,7 @@ export default function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8080/api/campaigns/', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/campaigns/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCampaigns(res.data);
@@ -34,7 +34,7 @@ export default function CampaignsPage() {
     setSyncing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://127.0.0.1:8080/api/templates/sync_from_meta/', {}, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/templates/sync_from_meta/`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert(res.data.message || "Templates synced successfully!");

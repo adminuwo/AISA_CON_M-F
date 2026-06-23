@@ -15,7 +15,7 @@ const AdminStatsPage = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://127.0.0.1:8080/api/admin/stats', {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/admin/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStats(response.data);

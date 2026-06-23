@@ -15,7 +15,7 @@ const ClientChannelsPage = () => {
       try {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const res = await axios.get(`http://127.0.0.1:8080/api/clients/${user.client}/`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/clients/${user.client}/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setClient(res.data);

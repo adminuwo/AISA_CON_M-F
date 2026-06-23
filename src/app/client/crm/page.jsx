@@ -27,7 +27,7 @@ export default function CRMPage() {
   const fetchContacts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8080/api/contacts/', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/contacts/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setContacts(res.data);
@@ -44,7 +44,7 @@ export default function CRMPage() {
       setContacts(prev => prev.map(c => c.id === contactId ? { ...c, stage: newStage } : c));
       
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:8080/api/contacts/${contactId}/`, { stage: newStage }, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/contacts/${contactId}/`, { stage: newStage }, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error) {

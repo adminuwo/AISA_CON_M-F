@@ -15,7 +15,7 @@ const AdminWorkflowsPage = () => {
     const fetch = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://127.0.0.1:8080/api/admin/workflows', {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/admin/workflows`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWorkflows(res.data);

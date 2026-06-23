@@ -199,7 +199,7 @@ const WorkflowBuilderInner = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://127.0.0.1:8080/api/workflows/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/workflows/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
       setWorkflow(res.data);
       let steps = res.data.steps;
       if (typeof steps === 'string') try { steps = JSON.parse(steps); } catch(e) { steps = {}; }
@@ -225,7 +225,7 @@ const WorkflowBuilderInner = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:8080/api/workflows/${id}/`, { steps: { nodes, edges } }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/workflows/${id}/`, { steps: { nodes, edges } }, { headers: { Authorization: `Bearer ${token}` } });
     } catch (err) { alert('Save failed'); } finally { setIsSaving(false); }
   };
 

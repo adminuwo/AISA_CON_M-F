@@ -11,7 +11,7 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API = 'http://127.0.0.1:8080/api';
+const API = `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api`;
 
 const formatBytes = (bytes) => {
   if (bytes < 1024) return `${bytes} B`;
