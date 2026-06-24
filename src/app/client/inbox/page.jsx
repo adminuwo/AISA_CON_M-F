@@ -47,9 +47,9 @@ const ClientInboxPage = () => {
     }
   }, [selectedConvoId, messages]);
 
-  // Group messages by from_address to create "Conversations"
+  // Group messages by contact (from_address for INCOMING, to_address for OUTGOING) to create "Conversations"
   const conversations = messages.reduce((acc, msg) => {
-    const contact = msg.from_address;
+    const contact = msg.message_type === 'INCOMING' ? msg.from_address : msg.to_address;
     if (!acc[contact]) {
       acc[contact] = {
         id: contact,
