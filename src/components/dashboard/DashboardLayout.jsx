@@ -30,23 +30,24 @@ const DashboardLayout = ({ children, role: initialRole }) => {
 
       <main className="flex-1 ml-64 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="h-20 bg-white/70 backdrop-blur-md border-b border-slate-100 px-10 flex items-center justify-between sticky top-0 z-20">
-          <div className="flex items-center gap-3">
-            <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
-            <h1 className="text-base font-black text-slate-900 tracking-tight uppercase">
+        <header className="h-24 bg-white/60 backdrop-blur-2xl border-b border-white/50 px-10 flex items-center justify-between sticky top-0 z-20 shadow-[0_4px_30px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]" />
+            <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight uppercase">
               {displayRole === 'ADMIN' ? 'Control Center' : 'Dashboard'}
             </h1>
           </div>
 
           <div className="flex items-center gap-6">
             {mounted && (
-              <div className="flex items-center gap-4 group cursor-pointer">
+              <div className="flex items-center gap-4 group cursor-pointer hover:bg-slate-50/50 p-2 pr-6 rounded-full transition-all duration-300 border border-transparent hover:border-slate-100">
                 <div className="text-right">
-                  <p className="text-xs font-black text-slate-900 leading-none mb-1 group-hover:text-blue-600 transition-colors">{displayName}</p>
-                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none">{displayRole}</p>
+                  <p className="text-sm font-black text-slate-900 leading-none mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 transition-all">{displayName}</p>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">{displayRole}</p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center font-black text-sm border border-slate-100 shadow-sm group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all">
-                  {displayName[0].toUpperCase()}
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-slate-100 to-slate-50 text-slate-500 flex items-center justify-center font-black text-lg border border-slate-200 shadow-md group-hover:shadow-blue-500/20 group-hover:border-blue-200 group-hover:from-blue-50 group-hover:to-indigo-50 group-hover:text-blue-600 transition-all duration-300 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative z-10">{displayName[0].toUpperCase()}</span>
                 </div>
               </div>
             )}
@@ -54,8 +55,10 @@ const DashboardLayout = ({ children, role: initialRole }) => {
         </header>
 
         {/* Content */}
-        <div className="p-10 flex-1 relative">
-          <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.15] pointer-events-none" />
+        <div className="p-10 flex-1 relative bg-gradient-to-br from-slate-50/50 to-white">
+          <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.08] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/5 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[120px] pointer-events-none" />
           <div className="relative z-10">
             {children}
           </div>

@@ -26,42 +26,64 @@
 @layer components {
   /* Modern Glass Card */
   .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[32px];
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[32px];
   }
 
-  /* Premium Shadow */
+  .glass-panel {
+    @apply bg-white/50 backdrop-blur-2xl border border-white/50 shadow-xl shadow-slate-200/40 rounded-[40px];
+  }
+
+  /* Premium Shadows */
   .premium-shadow {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05),
-                0 5px 15px -5px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 20px 40px -15px rgba(37, 99, 235, 0.05),
+                0 10px 20px -10px rgba(0, 0, 0, 0.02);
+  }
+
+  .premium-shadow-hover {
+    @apply transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1;
   }
 
   /* Hover Lift Effect */
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50;
+    @apply transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-slate-300/50;
   }
 
   /* Custom Input */
   .input-field {
-    @apply w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all font-medium text-slate-900 placeholder:text-slate-400;
+    @apply w-full px-6 py-4 bg-slate-50/50 border border-slate-200/60 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 focus:bg-white transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400;
   }
 
-  /* Modern Button */
+  /* Modern Buttons */
   .btn-premium {
-    @apply px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-[11px] shadow-lg shadow-slate-200 active:scale-95 transition-all hover:bg-blue-600;
+    @apply px-8 py-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-slate-300/50 active:scale-95 transition-all duration-300 hover:shadow-xl hover:shadow-slate-400/50 hover:from-slate-800 hover:to-slate-700 relative overflow-hidden;
+  }
+  
+  .btn-vibrant {
+    @apply px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-blue-500/30 active:scale-95 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5;
+  }
+
+  /* Text Gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-blue-800 to-slate-900;
+  }
+  
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600;
   }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #cbd5e1;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: #94a3b8;
 }

@@ -59,8 +59,9 @@ const Sidebar = ({ role }) => {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-100 flex flex-col z-40 font-sans">
       {/* Brand Header */}
       <div className="p-8 pb-4 flex items-center gap-3">
-        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200/50">
-          <ZapIcon className="text-white" size={18} strokeWidth={3} fill="currentColor" />
+        <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <ZapIcon className="text-white relative z-10" size={20} strokeWidth={3} fill="currentColor" />
         </div>
         <div>
           <h1 className="text-base font-black text-slate-900 tracking-tight leading-none">AisaConnect</h1>
@@ -79,16 +80,19 @@ const Sidebar = ({ role }) => {
               key={link.href} 
               href={link.href}
               className={cn(
-                "group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 relative",
+                "group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 relative overflow-hidden",
                 isActive 
-                  ? "bg-blue-50 text-blue-600 shadow-[0_4px_12px_rgba(37,99,235,0.08)]" 
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-gradient-to-r from-blue-50/80 to-indigo-50/30 text-blue-700 shadow-[0_8px_20px_rgba(37,99,235,0.06)] border border-blue-100/50" 
+                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:shadow-md hover:shadow-slate-200/20 hover:-translate-y-0.5"
               )}
             >
-              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className={cn("transition-all", isActive ? "text-blue-600 scale-110" : "text-slate-400 group-hover:text-slate-600")} />
-              <span className={cn("text-[13px] tracking-tight font-bold", isActive ? "text-blue-600" : "text-slate-500")}>{link.name}</span>
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className={cn("transition-all duration-300", isActive ? "text-blue-600 scale-110 drop-shadow-md" : "text-slate-400 group-hover:text-slate-600")} />
+              <span className={cn("text-[13px] tracking-tight font-bold z-10 relative", isActive ? "text-blue-700" : "text-slate-500")}>{link.name}</span>
               {isActive && (
-                <motion.div layoutId="active-pill" className="absolute left-0 w-1 h-5 bg-blue-600 rounded-r-full" />
+                <>
+                  <motion.div layoutId="active-pill" className="absolute left-0 w-1.5 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-r-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
+                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                </>
               )}
             </Link>
           );
