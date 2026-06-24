@@ -17,8 +17,8 @@ const ClientInboxPage = () => {
   const [selectedConvoId, setSelectedConvoId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [replyText, setReplyText] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef(null);
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -76,6 +76,44 @@ const ClientInboxPage = () => {
     .sort((a, b) => new Date(b.time) - new Date(a.time));
 
   const activeConvo = conversations[selectedConvoId];
+
+  const handleSendMessage = async () => {
+    if (!replyText.trim() || !activeConvo || isSending) return;
+    
+    const textToSend = replyText.trim();
+    setReplyText(''); // Optimistically clear input
+    setIsSending(true);
+    
+    // Create temporary message for optimistic UI
+    const tempMessage = {
+      id: `temp_${Date.now()}`,
+      body: textToSend,
+      message_type: 'OUTGOING',
+      created_at: new Date().toISOString()
+    };
+    
+    // Update local state instantly
+    setMessages(prev => [...prev, {
+      ...tempMessage,
+      to_address: activeConvo.id,
+      from_address: 'me'
+    }]);
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/messages/`, {
+        to_number: activeConvo.id,
+        body: textToSend
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      
+      // We don't strictly need to do anything here because the optimistic update is already there.
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      alert("Failed to send message");
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <DashboardLayout role="CLIENT">
@@ -227,6 +265,12 @@ const ClientInboxPage = () => {
                       placeholder="Type a message..."
                       value={replyText}
                       onChange={e => setReplyText(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
                       className="w-full bg-transparent p-4 text-sm font-medium outline-none resize-none max-h-32"
                     />
                     <div className="flex items-center justify-between p-2">
@@ -235,8 +279,8 @@ const ClientInboxPage = () => {
                         <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:bg-white rounded-full hover:shadow-sm transition-all"><Smile size={18} /></button>
                         <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:bg-white rounded-full hover:shadow-sm transition-all"><Paperclip size={18} /></button>
                       </div>
-                      <button className="bg-blue-600 text-white p-4 rounded-2xl hover:bg-slate-900 transition-all shadow-xl shadow-blue-100">
-                        <Send size={18} />
+                      <button onClick={handleSendMessage} disabled={!replyText.trim() || isSending} className={cn("text-white p-4 rounded-2xl transition-all shadow-xl", replyText.trim() && !isSending ? "bg-blue-600 hover:bg-slate-900 shadow-blue-100" : "bg-slate-300 cursor-not-allowed shadow-none")}>
+                        {isSending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                       </button>
                     </div>
                   </div>
