@@ -225,7 +225,23 @@ const WorkflowBuilderInner = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}`}/api/workflows/${id}/`, { steps: { nodes, edges } }, { headers: { Authorization: `Bearer ${token}` } });
+      
+      // Find the trigger node and extract its keyword(s)
+      const triggerNode = nodes.find(n => n.type === 'trigger');
+      let trigger_value = [];
+      if (triggerNode && triggerNode.data && triggerNode.data.keyword) {
+        // Split by comma and clean up whitespace
+        trigger_value = triggerNode.data.keyword.split(',').map(k => k.trim()).filter(k => k);
+      }
+
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'}/api/workflows/${id}/`, 
+        { 
+          steps: { nodes, edges },
+          trigger_value: trigger_value
+        }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (err) { alert('Save failed'); } finally { setIsSaving(false); }
   };
 
@@ -314,6 +330,7 @@ const MessageForm = ({ data, type, onSave }) => {
   const [msg, setMsg] = useState(data.message || '');
   const [buttons, setButtons] = useState(data.buttons || ['Option 1']);
   const [mediaUrl, setMediaUrl] = useState(data.mediaUrl || null);
+  const [keyword, setKeyword] = useState(data.keyword || '');
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -341,8 +358,18 @@ const MessageForm = ({ data, type, onSave }) => {
   };
 
   return (<div className="space-y-6">
-    <div><label className="text-[10px] font-black uppercase text-slate-400 mb-2 block">Message Content</label>
-    <textarea value={msg} onChange={e => setMsg(e.target.value)} className="w-full bg-slate-50 border p-4 rounded-xl text-sm font-bold focus:border-blue-600 outline-none" rows={4} /></div>
+    {type === 'trigger' ? (
+      <div>
+        <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block">Trigger Keywords</label>
+        <p className="text-[10px] text-slate-500 mb-2">Enter keywords separated by commas (e.g. mall, offer, hi)</p>
+        <input value={keyword} onChange={e => setKeyword(e.target.value)} className="w-full bg-slate-50 border p-4 rounded-xl text-sm font-bold focus:border-blue-600 outline-none" placeholder="Enter keywords..." />
+      </div>
+    ) : (
+      <div>
+        <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block">Message Content</label>
+        <textarea value={msg} onChange={e => setMsg(e.target.value)} className="w-full bg-slate-50 border p-4 rounded-xl text-sm font-bold focus:border-blue-600 outline-none" rows={4} />
+      </div>
+    )}
     
     {type === 'buttons' && (
       <div>
@@ -393,7 +420,7 @@ const MessageForm = ({ data, type, onSave }) => {
       </div>
     )}
 
-    <button onClick={() => onSave({ message: msg, buttons, mediaUrl })} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-200 transition-all">Save Changes</button>
+    <button onClick={() => onSave({ message: msg, buttons, mediaUrl, keyword })} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-200 transition-all">Save Changes</button>
   </div>);
 };
 
